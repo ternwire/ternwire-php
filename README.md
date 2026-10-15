@@ -16,7 +16,7 @@ require 'vendor/autoload.php';
 use Ternwire\TernwireClient;
 use Ternwire\TernwireApiException;
 
-$client = new TernwireClient(getenv('TERNWIRE_API_KEY'), getenv('TERNWIRE_API_ORIGIN'));
+$client = new TernwireClient(getenv('TERNWIRE_API_KEY'));
 try {
     $message = $client->submitEmail([
         'from' => 'notifications@your-verified-domain.com',
@@ -31,10 +31,18 @@ try {
 }
 ```
 
+The client calls the API at `TernwireClient::DEFAULT_BASE_URL`, `https://ternwire.com`.
+Pass an origin as the second argument only to target a local or staging API, such as
+`new TernwireClient($apiKey, 'http://localhost:3001')`. An origin must use https unless
+it points at localhost or a loopback address, and must not include `/v1`. `getenv()`
+returns `false` for an unset variable, so read an optional override with
+`getenv('TERNWIRE_API_ORIGIN') ?: null`.
+
 All 17 public operations use camelCase names. Bodies and responses are associative
 arrays with camelCase JSON keys. Use `(object) []` for an empty JSON object in nested
 fields such as `values`, `tags`, or `headers`. Template deletion returns `null`.
-The third constructor argument is timeout seconds, default 30.
+Set the timeout in seconds with `timeoutSeconds`, default 30, as in
+`new TernwireClient($apiKey, timeoutSeconds: 10)`.
 `listEmailTemplates(?string $cursor = null, ?int $limit = null)` returns one page of
 summaries; pass the previous `page.nextCursor` as `$cursor` to fetch the next page.
 
@@ -45,8 +53,9 @@ Use `Ternwire\Webhooks::verify($signatureHeader, $rawBody, $signingSecret)` befo
 parsing JSON. `$rawBody` is the binary-safe string read from `php://input`.
 Tolerance is an optional fourth argument in seconds, default 300.
 
-The complete example is `examples/send.php`. Set `TERNWIRE_API_KEY`,
-`TERNWIRE_API_ORIGIN`, `TERNWIRE_FROM`, and `TERNWIRE_TO` before running it.
+The complete example is `examples/send.php`. Set `TERNWIRE_API_KEY`, `TERNWIRE_FROM`,
+and `TERNWIRE_TO` before running it. Set `TERNWIRE_API_ORIGIN` only to point it at a
+local or staging API.
 
 Read the full documentation at [ternwire.com/docs](https://ternwire.com/docs), or contact
 support@ternwire.com. Released under the MIT License.

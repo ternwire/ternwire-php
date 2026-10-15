@@ -5,13 +5,16 @@ namespace Ternwire;
 
 final class TernwireClient
 {
+    public const DEFAULT_BASE_URL = 'https://ternwire.com';
+
     private readonly string $baseUrl;
 
     public function __construct(
         private readonly string $apiKey,
-        string $baseUrl,
+        ?string $baseUrl = null,
         private readonly int $timeoutSeconds = 30,
     ) {
+        $baseUrl ??= self::DEFAULT_BASE_URL;
         if (!preg_match('/\Aem_(live|test)_[A-Za-z0-9_-]+\z/', $apiKey)) {
             throw new \InvalidArgumentException('Use an em_live_ or em_test_ API key');
         }
@@ -188,16 +191,12 @@ final class TernwireClient
         if ($curl === false) {
             throw new \RuntimeException('Could not initialize cURL');
         }
-        try {
-            curl_setopt_array($curl, $options);
-            $rawBody = curl_exec($curl);
-            if ($rawBody === false) {
-                throw new \RuntimeException('Ternwire transport failed: ' . curl_error($curl));
-            }
-            $status = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
-        } finally {
-            curl_close($curl);
+        curl_setopt_array($curl, $options);
+        $rawBody = curl_exec($curl);
+        if ($rawBody === false) {
+            throw new \RuntimeException('Ternwire transport failed: ' . curl_error($curl));
         }
+        $status = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
         if ($status !== $expectedStatus) {
             throw new TernwireApiException($status, $rawBody, $responseHeaders);
         }
