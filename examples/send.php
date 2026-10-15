@@ -5,7 +5,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 use Ternwire\TernwireClient;
 
-$client = new TernwireClient(getenv('TERNWIRE_API_KEY'), getenv('TERNWIRE_API_ORIGIN'));
+$client = new TernwireClient(getenv('TERNWIRE_API_KEY'), getenv('TERNWIRE_API_ORIGIN') ?: null);
 $accepted = $client->submitEmail([
     'from' => getenv('TERNWIRE_FROM'),
     'to' => [getenv('TERNWIRE_TO')],
