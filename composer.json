@@ -3,6 +3,7 @@
   "description": "PHP client for the Ternwire transactional email API",
   "type": "library",
   "homepage": "https://ternwire.com",
+  "license": "MIT",
   "require": {
     "php": ">=8.1",
     "ext-curl": "*",

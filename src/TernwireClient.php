@@ -191,16 +191,12 @@ final class TernwireClient
         if ($curl === false) {
             throw new \RuntimeException('Could not initialize cURL');
         }
-        try {
-            curl_setopt_array($curl, $options);
-            $rawBody = curl_exec($curl);
-            if ($rawBody === false) {
-                throw new \RuntimeException('Ternwire transport failed: ' . curl_error($curl));
-            }
-            $status = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
-        } finally {
-            curl_close($curl);
+        curl_setopt_array($curl, $options);
+        $rawBody = curl_exec($curl);
+        if ($rawBody === false) {
+            throw new \RuntimeException('Ternwire transport failed: ' . curl_error($curl));
         }
+        $status = (int) curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
         if ($status !== $expectedStatus) {
             throw new TernwireApiException($status, $rawBody, $responseHeaders);
         }
